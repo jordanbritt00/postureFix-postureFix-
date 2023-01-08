@@ -1,0 +1,73 @@
+%% setup 
+clear; 
+clc;
+%hold all
+%a = arduino('COM3', 'Uno');
+clear a
+clear mpu
+clear writeRegister
+clear readRegister
+
+a = arduino('COM3', 'Uno', 'Libraries', 'I2C');
+%mpu = i2cdev(a,'0x68'); %mpu adress is normally 0x68
+
+%imu = mpu6050(a);
+%imu = mpu6050(a,'OutputFormat', 'matrix', 'SamplesPerRead', 2);
+imu = mpu6050(a,'OutputFormat', 'matrix') %, 'SamplesPerRead', 2);
+
+%[accel, gyro, timeStamps, overrun] = imu.read
+
+figure(1)
+a1 = animatedline('Color',[1 0 0]); 
+a2 = animatedline('Color',[0 1 0]);
+a3 = animatedline('Color',[0 0 1]);
+legend('gyro_x','gyro_y','gyro_z')
+
+j  = 1; %
+
+
+ax.YGrid = 'on';
+%ax.YLim = [65 85];
+stop = false;
+startTime = datetime('now');
+accel = zeros(10,3)
+
+while ~stop
+    % read data
+    [accel, gyro, timeStamps, overrun] = read(imu) %imu.read
+    
+% Get current time
+    t =  datetime('now') - startTime;
+    % Add points to animation
+    %addpoints(h,datenum(t),TempF)
+    % Update axes
+    ax.XLim = datenum([t-seconds(15) t]);
+    datetick('x','keeplimits')
+    
+    addpoints(a1,datenum(t),accel(1));
+    addpoints(a2,datenum(t),accel(2));
+    addpoints(a3,datenum(t),accel(3));
+j = j+1;
+    figure(1)
+    drawnow limitrate
+    
+    %ch = getkeywait(50)
+    %if ch == 8
+    %    stop = true;
+    %else 
+    %    stop = false;
+    %end
+    
+    %stop = 
+    %readDigitalPin(a,'D2');
+end
+
+
+%while('SamplesPerRead')
+    
+    
+    %addpoints(a3,j,gyro(3));
+    %j = j+1;
+    %figure(1)
+    %drawnow limitrate
+%end 
