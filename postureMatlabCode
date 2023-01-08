@@ -32,7 +32,14 @@ stop = false;
 startTime = datetime('now');
 accel = zeros(10,3)
 
-while ~stop
+
+ii = 0;
+TempF = zeros(1e4,1);
+t = zeros(1e4,1);
+count = 0;
+tic
+while toc < 10
+    ii = ii + 1;
     % read data
     [accel, gyro, timeStamps, overrun] = read(imu) %imu.read
     
@@ -51,18 +58,16 @@ j = j+1;
     figure(1)
     drawnow limitrate
     
-    %ch = getkeywait(50)
-    %if ch == 8
-    %    stop = true;
-    %else 
-    %    stop = false;
-    %end
+    if accel(3) < -1
+        fprintf('fix your posture!!', count)
+        count = count + 1;
+    end 
     
-    %stop = 
-    %readDigitalPin(a,'D2');
+  t(ii) = toc;
 end
-
-
+%fprintf("sit up boy\n %f", corrections);
+fprintf('your posture was corrected %f', count);
+fprintf(' times today');
 %while('SamplesPerRead')
     
     
